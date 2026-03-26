@@ -21,6 +21,7 @@ export async function pushSiteContent(
 	socialButtonImageUploads?: SocialButtonImageUploads
 ): Promise<void> {
 	const token = await getAuthToken()
+	let nextSiteContent = siteContent
 
 	toast.info('正在获取分支信息...')
 	const refData = await getRef(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, `heads/${GITHUB_CONFIG.BRANCH}`)
@@ -34,6 +35,7 @@ export async function pushSiteContent(
 
 	// Handle favicon upload
 	if (faviconItem?.type === 'file') {
+		nextSiteContent = { ...nextSiteContent, assetVersion: Date.now() } as SiteContent
 		toast.info('正在上传 Favicon...')
 		const contentBase64 = await fileToBase64NoPrefix(faviconItem.file)
 		const blobData = await createBlob(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, contentBase64, 'base64')
@@ -47,6 +49,7 @@ export async function pushSiteContent(
 
 	// Handle avatar upload
 	if (avatarItem?.type === 'file') {
+		nextSiteContent = { ...nextSiteContent, assetVersion: Date.now() } as SiteContent
 		toast.info('正在上传 Avatar...')
 		const contentBase64 = await fileToBase64NoPrefix(avatarItem.file)
 		const blobData = await createBlob(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, contentBase64, 'base64')
@@ -62,8 +65,9 @@ export async function pushSiteContent(
 	if (artImageUploads) {
 		for (const [id, item] of Object.entries(artImageUploads)) {
 			if (item.type !== 'file') continue
+			nextSiteContent = { ...nextSiteContent, assetVersion: Date.now() } as SiteContent
 
-			const artConfig = siteContent.artImages?.find(art => art.id === id)
+			const artConfig = nextSiteContent.artImages?.find(art => art.id === id)
 			if (!artConfig) continue
 
 			// Ensure blob is saved under public directory while keeping URL as /images/...
@@ -85,6 +89,7 @@ export async function pushSiteContent(
 
 	// Handle art images deletion
 	if (removedArtImages && removedArtImages.length > 0) {
+		nextSiteContent = { ...nextSiteContent, assetVersion: Date.now() } as SiteContent
 		for (const art of removedArtImages) {
 			const normalizedUrlPath = art.url.startsWith('/') ? art.url : `/${art.url}`
 			const path = `public${normalizedUrlPath}`
@@ -101,8 +106,9 @@ export async function pushSiteContent(
 	if (backgroundImageUploads) {
 		for (const [id, item] of Object.entries(backgroundImageUploads)) {
 			if (item.type !== 'file') continue
+			nextSiteContent = { ...nextSiteContent, assetVersion: Date.now() } as SiteContent
 
-			const bgConfig = siteContent.backgroundImages?.find(bg => bg.id === id)
+			const bgConfig = nextSiteContent.backgroundImages?.find(bg => bg.id === id)
 			if (!bgConfig) continue
 
 			// Only upload if URL starts with /images/background/ (local file)
@@ -126,6 +132,7 @@ export async function pushSiteContent(
 
 	// Handle background images deletion
 	if (removedBackgroundImages && removedBackgroundImages.length > 0) {
+		nextSiteContent = { ...nextSiteContent, assetVersion: Date.now() } as SiteContent
 		for (const bg of removedBackgroundImages) {
 			// Only delete if URL starts with /images/background/ (local file)
 			if (!bg.url.startsWith('/images/background/')) continue
@@ -145,8 +152,9 @@ export async function pushSiteContent(
 	if (socialButtonImageUploads) {
 		for (const [buttonId, item] of Object.entries(socialButtonImageUploads)) {
 			if (item.type !== 'file') continue
+			nextSiteContent = { ...nextSiteContent, assetVersion: Date.now() } as SiteContent
 
-			const button = siteContent.socialButtons?.find(btn => btn.id === buttonId)
+			const button = nextSiteContent.socialButtons?.find(btn => btn.id === buttonId)
 			if (!button) continue
 
 			// Only upload if URL starts with /images/social-buttons/ (local file)
@@ -169,7 +177,7 @@ export async function pushSiteContent(
 	}
 
 	// Handle site content JSON
-	const siteContentJson = JSON.stringify(siteContent, null, '\t')
+	const siteContentJson = JSON.stringify(nextSiteContent, null, '\t')
 	const siteContentBlob = await createBlob(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, toBase64Utf8(siteContentJson), 'base64')
 	treeItems.push({
 		path: 'src/config/site-content.json',

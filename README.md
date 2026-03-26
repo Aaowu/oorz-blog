@@ -21,17 +21,78 @@ export const GITHUB_CONFIG = {
 
 ## 2. 部署
 
-我这里熟悉 Vercel 部署，就以 Vercel 部署为例子。创建 Project => Import 这个项目
+这里改成 Cloudflare Workers 部署。
 
-![](https://www.yysuni.com/blogs/readme/730266f17fab9717.png)
+### 2.1 准备
 
-无需配置，直接点部署
+先确认这几个东西已经有了：
 
-![](https://www.yysuni.com/blogs/readme/95dee9a69154d0d0.png)
+- 一个 Cloudflare 账号
+- 一个已经托管到 Cloudflare 的域名
+- 一个 Github 仓库
+- 本地安装 `pnpm`
+- 本地安装 `wrangler`，或者直接使用 `npx wrangler`
 
-大约 60 秒会部署完成，有一个直接 vercel 域名，如：https://2025-blog-public.vercel.app/
+安装依赖：
 
-到这里部署网站已经完成了，下一步创建 Github App
+```bash
+pnpm install
+```
+
+登录 Cloudflare：
+
+```bash
+npx wrangler login
+```
+
+登录成功后，可以先确认一下：
+
+```bash
+npx wrangler whoami
+```
+
+### 2.2 部署到 Workers
+
+这个项目已经内置了 Cloudflare 配置，直接执行：
+
+```bash
+pnpm run deploy
+```
+
+首次部署成功后，会得到一个 `*.workers.dev` 地址。
+
+### 2.3 绑定自定义域名
+
+如果你要绑定自己的域名，比如 `oorz.org` 或 `blog.xxx.com`，就在 `wrangler.toml` 里配置 `routes`：
+
+```toml
+[[routes]]
+pattern = "oorz.org"
+custom_domain = true
+```
+
+然后重新执行：
+
+```bash
+pnpm run deploy
+```
+
+Cloudflare 生效后，域名就会直接指向这个 Worker。
+
+### 2.4 Cloudflare 连接 Github 自动部署
+
+Cloudflare 后台里有一项：
+
+> 将您的 Worker 连接到 Git 存储库来进行自动构建和部署
+
+这个不是必须的。
+
+- 如果你平时习惯本地执行 `pnpm run deploy`，那就不用开
+- 如果你希望每次 push 到 Github 后自动部署，那就可以开
+
+对这个项目来说，两种方式都可以。我更推荐先把手动部署跑通，再决定要不要接 Github 自动部署。
+
+到这里网站已经部署完成，下一步创建 Github App。
 
 ## 3. 创建 Github App 链接仓库
 
@@ -66,22 +127,32 @@ export const GITHUB_CONFIG = {
 
 ![](https://www.yysuni.com/blogs/readme/2cf1cee3b04326f1.png)
 
-点击安装，就完成了 Github App 管理该仓库的权限设置了。下一步就是让前端知道推送那个项目，就是最开始提到的环境变量。（如果你不会设置环境变量，直接改仓库文件 `src/consts.ts` 也行。因为是公开的，所以环境变量意义也不大）
+点击安装，就完成了 Github App 管理该仓库的权限设置了。下一步就是让前端知道推送哪个项目。
 
-直接输入这几个环境变量值就行，一般只用设置 OWNER 和 APP_ID。其它配置不用管，直接输入创建就行。
+这个项目默认读取下面这些配置：
 
-![](https://www.yysuni.com/blogs/readme/c5a049d737848abf.png)
+```ts
+export const GITHUB_CONFIG = {
+	OWNER: process.env.NEXT_PUBLIC_GITHUB_OWNER || 'your-name',
+	REPO: process.env.NEXT_PUBLIC_GITHUB_REPO || 'your-repo',
+	BRANCH: process.env.NEXT_PUBLIC_GITHUB_BRANCH || 'main',
+	APP_ID: process.env.NEXT_PUBLIC_GITHUB_APP_ID || '-'
+} as const
+```
 
-设置完成后，需要手动再部署一次，让环境变量生效。
-* 可以直接 push 一次仓库代码会触发部署
-* 也可以手动选择创建一次部署
-![](https://www.yysuni.com/blogs/readme/59a802ed8d1c3a13.png)
+如果你不会在 Cloudflare 里配环境变量，也可以直接修改仓库里的 `src/consts.ts`。
+
+配置完成后，重新执行一次部署：
+
+```bash
+pnpm run deploy
+```
 
 ## 4. 完成
 
 现在，部署的这个网站就可以开始使用前端改内容了。比如更改一个分享内容。
 
-**提示**，网站前端页面删改完提示成功之后，你需要等待后台的部署完成，再刷新页面才能完成服务器内容的更新哦。
+**提示**，网站前端页面删改完提示成功之后，如果你启用了 Cloudflare 的 Github 自动部署，就要等它自动构建完成再刷新。如果你是手动部署流，就重新执行一次 `pnpm run deploy`。
 
 ## 5. 删除
 

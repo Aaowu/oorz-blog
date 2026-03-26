@@ -13,6 +13,7 @@ import { makeNoise2D, rand } from './utils'
 export default function BlurredBubblesBackground({
 	count = 6,
 	colors = siteContent.backgroundColors,
+	opacity = 1,
 	minRadius = 250,
 	maxRadius = 400,
 	bottomBandStart = 0.8,
@@ -314,7 +315,7 @@ export default function BlurredBubblesBackground({
 			initial={{ opacity: 0 }}
 			transition={{ duration: 1 }}
 			className='fixed inset-0 z-0 overflow-hidden'
-			style={{ filter: 'blur(50px)' }}>
+			style={{ filter: 'blur(50px)', opacity }}>
 			<canvas ref={ref} className='h-full w-full' style={{ display: 'block' }} />
 		</motion.div>
 	)

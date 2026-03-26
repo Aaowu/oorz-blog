@@ -20,6 +20,11 @@ export default function Layout({ children }: PropsWithChildren) {
 	const currentBackgroundImageId = siteContent.currentBackgroundImageId
 	const currentBackgroundImage =
 		currentBackgroundImageId && currentBackgroundImageId.trim() ? backgroundImages.find(item => item.id === currentBackgroundImageId) : null
+	const backgroundUrl = currentBackgroundImage
+		? currentBackgroundImage.url.startsWith('/')
+			? `${currentBackgroundImage.url}?v=${siteContent.assetVersion || 1}`
+			: currentBackgroundImage.url
+		: null
 
 	return (
 		<>
@@ -39,18 +44,18 @@ export default function Layout({ children }: PropsWithChildren) {
 					} as React.CSSProperties
 				}
 			/>
-			{currentBackgroundImage && (
+			{backgroundUrl && (
 				<div
 					className='fixed inset-0 z-0 overflow-hidden'
 					style={{
-						backgroundImage: `url(${currentBackgroundImage.url})`,
+						backgroundImage: `url(${backgroundUrl})`,
 						backgroundSize: 'cover',
 						backgroundPosition: 'center',
 						backgroundRepeat: 'no-repeat'
 					}}
 				/>
 			)}
-			<BlurredBubblesBackground colors={siteContent.backgroundColors} regenerateKey={regenerateKey} />
+			<BlurredBubblesBackground colors={siteContent.backgroundColors} regenerateKey={regenerateKey} opacity={backgroundUrl ? 0.42 : 1} />
 
 			<main className='relative z-10 h-full'>
 				{children}

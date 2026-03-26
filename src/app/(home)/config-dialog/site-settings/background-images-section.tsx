@@ -44,7 +44,7 @@ export function BackgroundImagesSection({ formData, setFormData, backgroundImage
 			return {
 				...prev,
 				backgroundImages: backgroundImages as any,
-				currentBackgroundImageId: prev.currentBackgroundImageId || id
+				currentBackgroundImageId: id
 			}
 		})
 
@@ -65,7 +65,7 @@ export function BackgroundImagesSection({ formData, setFormData, backgroundImage
 			return {
 				...prev,
 				backgroundImages: backgroundImages as any,
-				currentBackgroundImageId: prev.currentBackgroundImageId || id
+				currentBackgroundImageId: id
 			}
 		})
 
