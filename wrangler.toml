@@ -10,6 +10,10 @@ binding = "ASSETS"
 [build]
 command = "pnpm run build:cf"
 
+[[routes]]
+pattern = "oorz.org"
+custom_domain = true
+
 [observability]
 [observability.logs]
 enabled = true
