@@ -10,10 +10,19 @@ import { useAuthStore } from '@/hooks/use-auth'
 import { useConfigStore } from '@/app/(home)/stores/config-store'
 import initialList from './list.json'
 import type { ImageItem } from './components/image-upload-dialog'
+import { fetchRepoJson, resolveRepoAssetUrl } from '@/lib/repo-content'
+
+function normalizeProjects(list: Project[]): Project[] {
+	return list.map(project => ({
+		...project,
+		image: resolveRepoAssetUrl(project.image) || project.image
+	}))
+}
 
 export default function Page() {
-	const [projects, setProjects] = useState<Project[]>(initialList as Project[])
-	const [originalProjects, setOriginalProjects] = useState<Project[]>(initialList as Project[])
+	const fallbackProjects = normalizeProjects(initialList as Project[])
+	const [projects, setProjects] = useState<Project[]>(fallbackProjects)
+	const [originalProjects, setOriginalProjects] = useState<Project[]>(fallbackProjects)
 	const [isEditMode, setIsEditMode] = useState(false)
 	const [isSaving, setIsSaving] = useState(false)
 	const [editingProject, setEditingProject] = useState<Project | null>(null)
@@ -24,6 +33,29 @@ export default function Page() {
 	const { isAuth, setPrivateKey } = useAuthStore()
 	const { siteContent } = useConfigStore()
 	const hideEditButton = siteContent.hideEditButton ?? false
+
+	useEffect(() => {
+		let cancelled = false
+
+		async function loadProjects() {
+			try {
+				const latestList = await fetchRepoJson<Project[]>('src/app/projects/list.json', '/projects/list.json')
+				if (!cancelled && Array.isArray(latestList)) {
+					const nextProjects = normalizeProjects(latestList)
+					setProjects(nextProjects)
+					setOriginalProjects(nextProjects)
+				}
+			} catch {
+				// keep fallback list from current bundle
+			}
+		}
+
+		void loadProjects()
+
+		return () => {
+			cancelled = true
+		}
+	}, [])
 
 	const handleUpdate = (updatedProject: Project, oldProject: Project, imageItem?: ImageItem) => {
 		setProjects(prev => prev.map(p => (p.url === oldProject.url ? updatedProject : p)))
@@ -41,12 +73,19 @@ export default function Page() {
 		setIsCreateDialogOpen(true)
 	}
 
-	const handleSaveProject = (updatedProject: Project) => {
+	const handleSaveProject = (updatedProject: Project, imageItem?: ImageItem) => {
 		if (editingProject) {
 			const updated = projects.map(p => (p.url === editingProject.url ? updatedProject : p))
 			setProjects(updated)
 		} else {
 			setProjects([...projects, updatedProject])
+		}
+		if (imageItem) {
+			setImageItems(prev => {
+				const newMap = new Map(prev)
+				newMap.set(updatedProject.url, imageItem)
+				return newMap
+			})
 		}
 	}
 

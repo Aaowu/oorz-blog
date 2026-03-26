@@ -1,4 +1,5 @@
 import type { BlogConfig } from '@/app/blog/types'
+import { fetchRepoJson, fetchRepoText, normalizeRouteParam, resolveRepoAssetUrl } from '@/lib/repo-content'
 
 export type { BlogConfig } from '@/app/blog/types'
 
@@ -14,32 +15,30 @@ export type LoadedBlog = {
  * Used by both view page and edit page
  */
 export async function loadBlog(slug: string): Promise<LoadedBlog> {
-	if (!slug) {
+	const normalizedSlug = normalizeRouteParam(slug)
+
+	if (!normalizedSlug) {
 		throw new Error('Slug is required')
 	}
 
-	// Load config.json
 	let config: BlogConfig = {}
-	const configRes = await fetch(`/blogs/${encodeURIComponent(slug)}/config.json`)
-	if (configRes.ok) {
-		try {
-			config = await configRes.json()
-		} catch {
-			config = {}
-		}
+	try {
+		config = await fetchRepoJson<BlogConfig>(`public/blogs/${normalizedSlug}/config.json`, `/blogs/${encodeURIComponent(normalizedSlug)}/config.json`)
+	} catch {
+		config = {}
 	}
 
-	// Load index.md
-	const mdRes = await fetch(`/blogs/${encodeURIComponent(slug)}/index.md`)
-	if (!mdRes.ok) {
+	let markdown = ''
+	try {
+		markdown = await fetchRepoText(`public/blogs/${normalizedSlug}/index.md`, `/blogs/${encodeURIComponent(normalizedSlug)}/index.md`)
+	} catch {
 		throw new Error('Blog not found')
 	}
-	const markdown = await mdRes.text()
 
 	return {
-		slug,
+		slug: normalizedSlug,
 		config,
 		markdown,
-		cover: config.cover
+		cover: resolveRepoAssetUrl(config.cover)
 	}
 }

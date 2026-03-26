@@ -8,10 +8,11 @@ import { WriteEditor } from '../components/editor'
 import { WriteSidebar } from '../components/sidebar'
 import { WriteActions } from '../components/actions'
 import { WritePreview } from '../components/preview'
+import { normalizeRouteParam } from '@/lib/repo-content'
 
 export default function EditBlogPage() {
 	const params = useParams() as { slug?: string }
-	const slug = params?.slug || ''
+	const slug = normalizeRouteParam(params?.slug || '')
 
 	const { form, cover } = useWriteStore()
 	const { isPreview, closePreview } = usePreviewStore()

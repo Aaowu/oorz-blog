@@ -8,10 +8,12 @@ import { BlogPreview } from '@/components/blog-preview'
 import { loadBlog, type BlogConfig } from '@/lib/load-blog'
 import { useReadArticles } from '@/hooks/use-read-articles'
 import LiquidGrass from '@/components/liquid-grass'
+import { normalizeRouteParam } from '@/lib/repo-content'
 
 export default function Page() {
 	const params = useParams() as { id?: string | string[] }
-	const slug = Array.isArray(params?.id) ? params.id[0] : params?.id || ''
+	const rawSlug = Array.isArray(params?.id) ? params.id[0] : params?.id || ''
+	const slug = normalizeRouteParam(rawSlug)
 	const router = useRouter()
 	const { markAsRead } = useReadArticles()
 

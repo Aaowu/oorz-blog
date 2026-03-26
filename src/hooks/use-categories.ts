@@ -1,17 +1,19 @@
 'use client'
 
 import useSWR from 'swr'
+import { fetchRepoJson } from '@/lib/repo-content'
 
 export type CategoriesConfig = {
 	categories: string[]
 }
 
-const fetcher = async (url: string): Promise<CategoriesConfig> => {
-	const res = await fetch(url, { cache: 'no-store' })
-	if (!res.ok) {
+const fetcher = async (): Promise<CategoriesConfig> => {
+	let data: unknown
+	try {
+		data = await fetchRepoJson<unknown>('public/blogs/categories.json', '/blogs/categories.json')
+	} catch {
 		return { categories: [] }
 	}
-	const data = await res.json()
 	if (Array.isArray(data)) {
 		return { categories: data.filter((item): item is string => typeof item === 'string') }
 	}
@@ -22,7 +24,7 @@ const fetcher = async (url: string): Promise<CategoriesConfig> => {
 }
 
 export function useCategories() {
-	const { data, error, isLoading } = useSWR<CategoriesConfig>('/blogs/categories.json', fetcher, {
+	const { data, error, isLoading } = useSWR<CategoriesConfig>('blog-categories', fetcher, {
 		revalidateOnFocus: false,
 		revalidateOnReconnect: true
 	})
@@ -33,4 +35,3 @@ export function useCategories() {
 		error
 	}
 }
-
