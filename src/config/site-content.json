@@ -59,6 +59,7 @@
 	"isCachePem": false,
 	"hideEditButton": false,
 	"enableCategories": true,
+	"enableBlurredBubbles": true,
 	"currentHatIndex": 3,
 	"hatFlipped": false,
 	"enableChristmas": true,

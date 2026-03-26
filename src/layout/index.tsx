@@ -55,7 +55,9 @@ export default function Layout({ children }: PropsWithChildren) {
 					}}
 				/>
 			)}
-			<BlurredBubblesBackground colors={siteContent.backgroundColors} regenerateKey={regenerateKey} opacity={backgroundUrl ? 0.42 : 1} />
+			{siteContent.enableBlurredBubbles !== false && (
+				<BlurredBubblesBackground colors={siteContent.backgroundColors} regenerateKey={regenerateKey} opacity={backgroundUrl ? 0.42 : 1} />
+			)}
 
 			<main className='relative z-10 h-full'>
 				{children}

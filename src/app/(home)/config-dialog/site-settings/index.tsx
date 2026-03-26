@@ -124,6 +124,15 @@ export function SiteSettings({
 					/>
 					<span className='text-sm font-medium'>开启圣诞节</span>
 				</label>
+				<label className='flex items-center gap-2'>
+					<input
+						type='checkbox'
+						checked={formData.enableBlurredBubbles ?? true}
+						onChange={e => setFormData({ ...formData, enableBlurredBubbles: e.target.checked })}
+						className='accent-brand h-4 w-4 rounded'
+					/>
+					<span className='text-sm font-medium'>开启底部雾气</span>
+				</label>
 			</div>
 
 			<HatSection formData={formData} setFormData={setFormData} />

@@ -25,49 +25,62 @@ export const GITHUB_CONFIG = {
 
 ### 2.1 准备
 
-先确认这几个东西已经有了：
+先准备这些东西：
 
 - 一个 Cloudflare 账号
-- 一个已经托管到 Cloudflare 的域名
-- 一个 Github 仓库
-- 本地安装 `pnpm`
-- 本地安装 `wrangler`，或者直接使用 `npx wrangler`
+- 一个已经接入 Cloudflare 的域名
+- 一个你自己的 Github 仓库
+- 本地 Node.js 环境
+- `pnpm`
+- `wrangler`
 
-安装依赖：
+如果你本地还没装依赖，先执行：
 
 ```bash
 pnpm install
 ```
 
-登录 Cloudflare：
+然后登录 Cloudflare：
 
 ```bash
 npx wrangler login
 ```
 
-登录成功后，可以先确认一下：
+登录成功后，建议确认一下当前身份：
 
 ```bash
 npx wrangler whoami
 ```
 
+如果这里能看到你的 Cloudflare 账号信息，就说明后面可以继续了。
+
 ### 2.2 部署到 Workers
 
-这个项目已经内置了 Cloudflare 配置，直接执行：
+这个项目已经内置了 Cloudflare Workers 配置，直接执行：
 
 ```bash
 pnpm run deploy
 ```
 
-首次部署成功后，会得到一个 `*.workers.dev` 地址。
+首次部署成功后，会拿到一个 `*.workers.dev` 地址。
+
+如果你只是先验证项目能不能跑，到这里就够了。
+
+如果你希望本地先看构建是否正常，也可以先执行：
+
+```bash
+pnpm run build:cf
+```
+
+它会先本地构建 OpenNext for Cloudflare，再由 `deploy` 发到 Workers。
 
 ### 2.3 绑定自定义域名
 
-如果你要绑定自己的域名，比如 `oorz.org` 或 `blog.xxx.com`，就在 `wrangler.toml` 里配置 `routes`：
+如果你要绑定自己的域名，比如 `example.com` 或 `blog.example.com`，就在 `wrangler.toml` 里配置 `routes`：
 
 ```toml
 [[routes]]
-pattern = "oorz.org"
+pattern = "example.com"
 custom_domain = true
 ```
 
@@ -77,7 +90,21 @@ custom_domain = true
 pnpm run deploy
 ```
 
-Cloudflare 生效后，域名就会直接指向这个 Worker。
+Cloudflare 生效后，这个域名就会直接指向你的 Worker。
+
+如果你使用的是子域名，也可以写成这样：
+
+```toml
+[[routes]]
+pattern = "blog.example.com"
+custom_domain = true
+```
+
+注意：
+
+- 根域名和子域名都可以绑
+- 绑定前，先确认这个域名没有被别的站点占着
+- 修改完 `wrangler.toml` 后，要重新执行一次 `pnpm run deploy`
 
 ### 2.4 Cloudflare 连接 Github 自动部署
 
@@ -87,10 +114,20 @@ Cloudflare 后台里有一项：
 
 这个不是必须的。
 
-- 如果你平时习惯本地执行 `pnpm run deploy`，那就不用开
-- 如果你希望每次 push 到 Github 后自动部署，那就可以开
+你可以这样理解：
 
-对这个项目来说，两种方式都可以。我更推荐先把手动部署跑通，再决定要不要接 Github 自动部署。
+- 只想自己本地控制发布，就不用开
+- 想要每次 push 到 Github 自动发布，就开
+
+对这个项目来说，两种方式都没问题。
+
+我更推荐的顺序是：
+
+1. 先把手动部署跑通
+2. 确认域名、Github App、前台编辑都正常
+3. 再决定要不要接 Github 自动部署
+
+这样排查问题会简单很多。
 
 到这里网站已经部署完成，下一步创建 Github App。
 
@@ -147,6 +184,8 @@ export const GITHUB_CONFIG = {
 ```bash
 pnpm run deploy
 ```
+
+如果你已经打开了 Cloudflare 的 Github 自动部署，那也可以直接 push 仓库，等它自动构建。
 
 ## 4. 完成
 
