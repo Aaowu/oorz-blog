@@ -5,22 +5,22 @@
 		"username": "2333"
 	},
 	"theme": {
-		"colorBrand": "#3b82f6",
-		"colorPrimary": "#1f2937",
-		"colorSecondary": "#6b7280",
-		"colorBrandSecondary": "#f59e0b",
-		"colorBg": "#f5f7fb",
-		"colorBorder": "#ffffff",
-		"colorCard": "#ffffffb8",
-		"colorArticle": "#fffffff0"
+		"colorBrand": "#5f7c8a",
+		"colorPrimary": "#24323a",
+		"colorSecondary": "#74848b",
+		"colorBrandSecondary": "#b88b5a",
+		"colorBg": "#e7ecef",
+		"colorBorder": "#f3f6f7",
+		"colorCard": "#f7f9fac4",
+		"colorArticle": "#fbfcfce8"
 	},
 	"backgroundColors": [
-		"#eef4ff",
-		"#dbeafe",
-		"#c7d2fe",
-		"#bfdbfe",
-		"#fde68a",
-		"#fbcfe8"
+		"#dbe4e8",
+		"#cfdadd",
+		"#bcc9ce",
+		"#a9b8bf",
+		"#d7c2ab",
+		"#e5d8ca"
 	],
 	"artImages": [
 		{
