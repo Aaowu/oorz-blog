@@ -1,1 +1,12 @@
-[]
+[
+	{
+		"name": "sub2",
+		"year": 2026,
+		"image": "https://sub2.521032.xyz/logo.png",
+		"url": "https://sub2.521032.xyz/",
+		"description": "啊",
+		"tags": [
+			"哈"
+		]
+	}
+]
