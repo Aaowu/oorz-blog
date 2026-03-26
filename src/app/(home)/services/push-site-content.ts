@@ -196,14 +196,28 @@ export async function pushSiteContent(
 		sha: cardStylesBlob.sha
 	})
 
-	toast.info('正在创建文件树...')
-	const treeData = await createTree(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, treeItems, latestCommitSha)
+	async function commitOnce(parentSha: string) {
+		toast.info('正在创建文件树...')
+		const treeData = await createTree(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, treeItems, parentSha)
 
-	toast.info('正在创建提交...')
-	const commitData = await createCommit(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, commitMessage, treeData.sha, [latestCommitSha])
+		toast.info('正在创建提交...')
+		const commitData = await createCommit(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, commitMessage, treeData.sha, [parentSha])
 
-	toast.info('正在更新分支...')
-	await updateRef(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, `heads/${GITHUB_CONFIG.BRANCH}`, commitData.sha)
+		toast.info('正在更新分支...')
+		await updateRef(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, `heads/${GITHUB_CONFIG.BRANCH}`, commitData.sha)
+	}
+
+	try {
+		await commitOnce(latestCommitSha)
+	} catch (error: any) {
+		if (String(error?.message || '').includes('update ref failed: 422')) {
+			toast.info('检测到分支已更新，正在重试...')
+			const latestRef = await getRef(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, `heads/${GITHUB_CONFIG.BRANCH}`)
+			await commitOnce(latestRef.sha)
+		} else {
+			throw error
+		}
+	}
 
 	toast.success('保存成功！')
 }
