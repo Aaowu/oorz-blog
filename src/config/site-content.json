@@ -4,7 +4,7 @@
 		"description": "瓜瓜碎碎念……",
 		"username": "2333"
 	},
-	"assetVersion": 1743001200,
+	"assetVersion": 1774586452184,
 	"theme": {
 		"colorBrand": "#5f7c8a",
 		"colorPrimary": "#24323a",
@@ -31,9 +31,13 @@
 		{
 			"id": "a46372ff45bc5524",
 			"url": "/images/art/a46372ff45bc5524.jpg"
+		},
+		{
+			"id": "c686e739b411cab9",
+			"url": "/images/art/c686e739b411cab9.jpg"
 		}
 	],
-	"currentArtImageId": "cat",
+	"currentArtImageId": "c686e739b411cab9",
 	"backgroundImages": [
 		{
 			"id": "",
@@ -60,7 +64,7 @@
 	"hideEditButton": false,
 	"enableCategories": true,
 	"enableBlurredBubbles": false,
-	"currentHatIndex": 2,
+	"currentHatIndex": 3,
 	"hatFlipped": false,
 	"enableChristmas": true,
 	"beian": {
