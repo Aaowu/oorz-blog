@@ -37,8 +37,8 @@
 		"height": 66,
 		"offset": 120,
 		"order": 6,
-		"offsetX": null,
-		"offsetY": null,
+		"offsetX": 99,
+		"offsetY": 264,
 		"enabled": true
 	},
 	"socialButtons": {
@@ -85,16 +85,16 @@
 		"width": 54,
 		"height": 54,
 		"order": 8,
-		"offsetX": null,
-		"offsetY": null,
+		"offsetX": 470,
+		"offsetY": -140,
 		"enabled": true
 	},
 	"hatCard": {
 		"width": 99,
 		"height": 105,
 		"order": 10,
-		"offsetX": -48,
-		"offsetY": -168,
+		"offsetX": -50,
+		"offsetY": -176,
 		"enabled": true
 	},
 	"beianCard": {
