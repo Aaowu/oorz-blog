@@ -8,5 +8,15 @@
 		"tags": [
 			"sub2"
 		]
+	},
+	{
+		"name": "Token Arena",
+		"year": 2026,
+		"image": "https://token.poco-ai.com/logo_dark.svg",
+		"url": "https://token.poco-ai.com/zh/usage",
+		"description": "token查看",
+		"tags": [
+			"token"
+		]
 	}
 ]
